@@ -13,10 +13,10 @@ contract MarketFactory {
         oracle = new Oracle();
     }
 
-    function createMarket(bytes32 _questionId) external returns (Market) {
+    function createMarket(bytes32 _questionId, bytes32 _tokenName) external returns (Market) {
         require(address(markets[_questionId]) == address(0), "Market already exists");
 
-        Market newMarket = new Market(_questionId, oracle);
+        Market newMarket = new Market(_questionId, _tokenName, oracle);
         markets[_questionId] = newMarket;
 
         return newMarket;

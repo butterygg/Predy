@@ -14,13 +14,13 @@ contract Market {
     OutcomeToken longToken;
     OutcomeToken shortToken;
 
-    constructor(bytes32 _questionId, OutcomeToken _longToken, OutcomeToken _shortToken, Oracle _oracle) {
+    constructor(bytes32 _questionId, bytes32 _tokenName, Oracle _oracle) {
         questionId = _questionId;
-        // FIXME: "Funded-Long-Project-Metric"
-        OutcomeToken longToken = new OutcomeToken("Long Token", "LONG");
-        OutcomeToken shortToken = new OutcomeToken("Short Token", "SHRT");
+        
+        longToken = new OutcomeToken(string(abi.encodePacked("Long ", _tokenName)), string(abi.encodePacked("L", _tokenName)));
+        shortToken = new OutcomeToken(string(abi.encodePacked("Short ", _tokenName)), string(abi.encodePacked("S", _tokenName)));
 
-        marketMaker = new MarketMaker(_longToken, _shortToken);
+        marketMaker = new MarketMaker(longToken, shortToken);
         oracle = _oracle;
     }
 
