@@ -10,73 +10,40 @@ contract MarketMaker {
     OutcomeToken public longToken;
     OutcomeToken public shortToken;
 
-    uint256 public constant INITIAL_RESERVE = 1e20; // 100 tokens
-    uint256 public longReserve;
-    uint256 public shortReserve;
-
-
     constructor(OutcomeToken _longToken, OutcomeToken _shortToken) {
         longToken = _longToken;
         shortToken = _shortToken;
-
-        // Initialize reserves
-        longReserve = INITIAL_RESERVE;
-        shortReserve = INITIAL_RESERVE;
-        
-        // Mint initial tokens to this contract
-        longToken.mint(address(this), INITIAL_RESERVE);
-        shortToken.mint(address(this), INITIAL_RESERVE);
-
     }
 
-    function deposit() external payable {
-        uint256 amount = msg.value;
+    // TODO: implement LP fees
+    // FIXME: Bookkeep the deposits
+    function deposit(uint256 amount) external {
+        require(longToken.allowance(msg.sender, address(this)) >= amount, "Insufficient long token allowance");
+        require(shortToken.allowance(msg.sender, address(this)) >= amount, "Insufficient short token allowance");
 
-        require(amount <= longReserve && amount <= shortReserve, "Insufficient reserve");
+        longToken.transferFrom(msg.sender, address(this), amount);
+        shortToken.transferFrom(msg.sender, address(this), amount);
+    }
+
+    function withdraw(uint256 amount) external {
+        require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
 
         longToken.transfer(msg.sender, amount);
         shortToken.transfer(msg.sender, amount);
-
-        longReserve -= amount;
-        shortReserve -= amount;
-
     }
-
-function withdraw(uint256 amount) external {
-    require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
-
-    // Check allowances
-    require(longToken.allowance(msg.sender, address(this)) >= amount, "Insufficient long token allowance");
-    require(shortToken.allowance(msg.sender, address(this)) >= amount, "Insufficient short token allowance");
-
-    // Transfer tokens using transferFrom
-    require(longToken.transferFrom(msg.sender, address(this), amount), "Long token transfer failed");
-    require(shortToken.transferFrom(msg.sender, address(this), amount), "Short token transfer failed");
-    
-    longReserve += amount;
-    shortReserve += amount;
-
-    payable(msg.sender).transfer(amount);
-}
 
     function swap(bool buyLong, uint256 amountIn) external {
         require(amountIn > 0, "Amount must be greater than 0");
 
-
         uint256 amountOut;
         if (buyLong) {
-            amountOut = calculateSwapAmount(shortReserve, longReserve, amountIn);
+            amountOut = calculateSwapAmount(shortToken.balanceOf(address(this)), longToken.balanceOf(address(this)), amountIn);
             shortToken.transferFrom(msg.sender, address(this), amountIn);
             longToken.transfer(msg.sender, amountOut);
-            shortReserve += amountIn;
-            longReserve -= amountOut;
         } else {
-            amountOut = calculateSwapAmount(longReserve, shortReserve, amountIn);
+            amountOut = calculateSwapAmount(longToken.balanceOf(address(this)), shortToken.balanceOf(address(this)), amountIn);
             longToken.transferFrom(msg.sender, address(this), amountIn);
             shortToken.transfer(msg.sender, amountOut);
-            longReserve += amountIn;
-            shortReserve -= amountOut;
-
         }
     }
 

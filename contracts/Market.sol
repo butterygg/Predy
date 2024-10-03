@@ -11,11 +11,32 @@ contract Market {
     Oracle public oracle;
     bool public isResolved;
     bool public outcome;
+    OutcomeToken longToken;
+    OutcomeToken shortToken;
 
-    constructor(bytes32 _questionId, OutcomeToken _passToken, OutcomeToken _failToken, Oracle _oracle) {
+    constructor(bytes32 _questionId, OutcomeToken _longToken, OutcomeToken _shortToken, Oracle _oracle) {
         questionId = _questionId;
-        marketMaker = new MarketMaker(_passToken, _failToken);
+        // FIXME: "Funded-Long-Project-Metric"
+        OutcomeToken longToken = new OutcomeToken("Long Token", "LONG");
+        OutcomeToken shortToken = new OutcomeToken("Short Token", "SHRT");
+
+        marketMaker = new MarketMaker(_longToken, _shortToken);
         oracle = _oracle;
+    }
+
+    function split() external payable {
+        uint256 amount = msg.value;
+        
+        longToken.mint(msg.sender, amount);
+        shortToken.mint(msg.sender, amount);
+    }
+
+    function merge(uint256 amount) external {
+        require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
+
+        longToken.burn(msg.sender, amount);
+        shortToken.burn(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
     }
 
     function resolveMarket() external {

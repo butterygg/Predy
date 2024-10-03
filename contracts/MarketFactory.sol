@@ -16,10 +16,7 @@ contract MarketFactory {
     function createMarket(bytes32 _questionId) external returns (Market) {
         require(address(markets[_questionId]) == address(0), "Market already exists");
 
-        OutcomeToken passToken = new OutcomeToken("Long Token", "LONG");
-        OutcomeToken failToken = new OutcomeToken("Short Token", "SHRT");
-
-        Market newMarket = new Market(_questionId, passToken, failToken, oracle);
+        Market newMarket = new Market(_questionId, oracle);
         markets[_questionId] = newMarket;
 
         return newMarket;
