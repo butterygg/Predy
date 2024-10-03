@@ -29,10 +29,11 @@ describe("Butter", function () {
 
     it("Should create a new market", async function () {
       const { marketFactory } = await loadFixture(deployContractsFixture);
-      const questionId = ethers.keccak256(ethers.toUtf8Bytes("Will it rain tomorrow?"));
-      
-      await expect(marketFactory.createMarket(questionId))
-        .to.not.be.reverted;
+      const questionId = ethers.keccak256(
+        ethers.toUtf8Bytes("Will it rain tomorrow?")
+      );
+
+      await expect(marketFactory.createMarket(questionId)).to.not.be.reverted;
 
       const marketAddress = await marketFactory.markets(questionId);
       expect(marketAddress).to.be.properAddress;
@@ -40,18 +41,24 @@ describe("Butter", function () {
 
     it("Should not allow creating a market with an existing questionId", async function () {
       const { marketFactory } = await loadFixture(deployContractsFixture);
-      const questionId = ethers.keccak256(ethers.toUtf8Bytes("Will it rain tomorrow?"));
-      
+      const questionId = ethers.keccak256(
+        ethers.toUtf8Bytes("Will it rain tomorrow?")
+      );
+
       await marketFactory.createMarket(questionId);
-      await expect(marketFactory.createMarket(questionId))
-        .to.be.revertedWith("Market already exists");
+      await expect(marketFactory.createMarket(questionId)).to.be.revertedWith(
+        "Market already exists"
+      );
     });
   });
 
   describe("Market", function () {
     async function createMarketFixture() {
-      const { marketFactory, owner, addr1, addr2 } = await deployContractsFixture();
-      const questionId = ethers.keccak256(ethers.toUtf8Bytes("Will it rain tomorrow?"));
+      const { marketFactory, owner, addr1, addr2 } =
+        await deployContractsFixture();
+      const questionId = ethers.keccak256(
+        ethers.toUtf8Bytes("Will it rain tomorrow?")
+      );
       await marketFactory.createMarket(questionId);
       const marketAddress = await marketFactory.markets(questionId);
       const Market = await ethers.getContractFactory("Market");
@@ -72,16 +79,18 @@ describe("Butter", function () {
 
     it("Should allow resolving the market", async function () {
       const { market, owner } = await loadFixture(createMarketFixture);
-      await expect(market.connect(owner).resolveMarket())
-        .to.not.be.reverted;
+      await expect(market.connect(owner).resolveMarket()).to.not.be.reverted;
       expect(await market.isResolved()).to.be.true;
     });
   });
 
   describe("MarketMaker", function () {
     async function setupMarketMakerFixture() {
-      const { marketFactory, owner, addr1, addr2 } = await deployContractsFixture();
-      const questionId = ethers.keccak256(ethers.toUtf8Bytes("Will it rain tomorrow?"));
+      const { marketFactory, owner, addr1, addr2 } =
+        await deployContractsFixture();
+      const questionId = ethers.keccak256(
+        ethers.toUtf8Bytes("Will it rain tomorrow?")
+      );
       await marketFactory.createMarket(questionId);
       const marketAddress = await marketFactory.markets(questionId);
       const Market = await ethers.getContractFactory("Market");
@@ -95,8 +104,9 @@ describe("Butter", function () {
     it("Should allow depositing", async function () {
       const { marketMaker, addr1 } = await loadFixture(setupMarketMakerFixture);
       const depositAmount = ethers.parseEther("1");
-      await expect(marketMaker.connect(addr1).deposit({ value: depositAmount }))
-        .to.changeEtherBalance(addr1, -depositAmount);
+      await expect(
+        marketMaker.connect(addr1).deposit({ value: depositAmount })
+      ).to.changeEtherBalance(addr1, -depositAmount);
     });
 
     it("Should mint correct amount of tokens on deposit", async function () {
@@ -104,9 +114,9 @@ describe("Butter", function () {
       const depositAmount = ethers.parseEther("1");
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
 
-      const ConditionalToken = await ethers.getContractFactory("ConditionalToken");
-      const passToken = ConditionalToken.attach(await marketMaker.passToken());
-      const failToken = ConditionalToken.attach(await marketMaker.failToken());
+      const OutcomeToken = await ethers.getContractFactory("OutcomeToken");
+      const passToken = OutcomeToken.attach(await marketMaker.passToken());
+      const failToken = OutcomeToken.attach(await marketMaker.failToken());
 
       expect(await passToken.balanceOf(addr1.address)).to.equal(depositAmount);
       expect(await failToken.balanceOf(addr1.address)).to.equal(depositAmount);
@@ -117,8 +127,9 @@ describe("Butter", function () {
       const depositAmount = ethers.parseEther("1");
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
 
-      await expect(marketMaker.connect(addr1).withdraw(depositAmount))
-        .to.changeEtherBalance(addr1, depositAmount);
+      await expect(
+        marketMaker.connect(addr1).withdraw(depositAmount)
+      ).to.changeEtherBalance(addr1, depositAmount);
     });
 
     it("Should allow swapping tokens", async function () {
@@ -127,16 +138,18 @@ describe("Butter", function () {
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
 
       const swapAmount = ethers.parseEther("0.5");
-      await expect(marketMaker.connect(addr1).swap(true, swapAmount))
-        .to.not.be.reverted;
+      await expect(marketMaker.connect(addr1).swap(true, swapAmount)).to.not.be
+        .reverted;
     });
   });
 
-  describe("ConditionalToken", function () {
+  describe("OutcomeToken", function () {
     async function setupTokenFixture() {
       const [owner, addr1, addr2] = await ethers.getSigners();
-      const ConditionalToken = await ethers.getContractFactory("ConditionalToken");
-      const token = await ConditionalToken.deploy("Test Token", "TEST");
+      const OutcomeToken = await ethers.getContractFactory(
+        "OutcomeToken"
+      );
+      const token = await OutcomeToken.deploy("Test Token", "TEST");
       await token.waitForDeployment();
       return { token, owner, addr1, addr2 };
     }
@@ -160,7 +173,9 @@ describe("Butter", function () {
       await token.mint(addr1.address, mintAmount);
       const burnAmount = ethers.parseEther("50");
       await token.burn(addr1.address, burnAmount);
-      expect(await token.balanceOf(addr1.address)).to.equal(mintAmount - burnAmount);
+      expect(await token.balanceOf(addr1.address)).to.equal(
+        mintAmount - burnAmount
+      );
     });
   });
 });
