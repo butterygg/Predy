@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./ConditionalToken.sol";
+import "./OutcomeToken.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract MarketMaker {
     using Math for uint256;
 
-    ConditionalToken public passToken;
-    ConditionalToken public failToken;
+    OutcomeToken public passToken;
+    OutcomeToken public failToken;
     uint256 public constant INITIAL_LIQUIDITY = 1e18;
 
-    constructor(ConditionalToken _passToken, ConditionalToken _failToken) {
+    constructor(OutcomeToken _passToken, OutcomeToken _failToken) {
         passToken = _passToken;
         failToken = _failToken;
     }

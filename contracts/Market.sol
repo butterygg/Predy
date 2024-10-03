@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./MarketMaker.sol";
 import "./Oracle.sol";
-import "./ConditionalToken.sol";
+import "./OutcomeToken.sol";
 
 contract Market {
     bytes32 public questionId;
@@ -12,7 +12,7 @@ contract Market {
     bool public isResolved;
     bool public outcome;
 
-    constructor(bytes32 _questionId, ConditionalToken _passToken, ConditionalToken _failToken, Oracle _oracle) {
+    constructor(bytes32 _questionId, OutcomeToken _passToken, OutcomeToken _failToken, Oracle _oracle) {
         questionId = _questionId;
         marketMaker = new MarketMaker(_passToken, _failToken);
         oracle = _oracle;
@@ -25,4 +25,3 @@ contract Market {
     }
 }
 
- 
