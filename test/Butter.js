@@ -121,7 +121,7 @@ describe("Butter", function () {
         .to.changeEtherBalance(addr1, depositAmount);
     });
 
-    it.only("Should allow swapping tokens", async function () {
+    it("Should allow swapping tokens", async function () {
       const { marketMaker, addr1 } = await loadFixture(setupMarketMakerFixture);
       const depositAmount = ethers.parseEther("1");
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
