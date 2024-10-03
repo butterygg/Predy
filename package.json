@@ -15,6 +15,7 @@
     "ethers": "^6.4.0",
     "hardhat": "^2.22.12",
     "hardhat-gas-reporter": "^1.0.8",
+    "prettier": "^3.3.3",
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.3.0"
   },
