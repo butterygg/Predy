@@ -10,51 +10,74 @@ contract MarketMaker {
     OutcomeToken public longToken;
     OutcomeToken public shortToken;
 
+    uint256 public constant INITIAL_RESERVE = 1e20; // 100 tokens
+    uint256 public longReserve;
+    uint256 public shortReserve;
+
+
     constructor(OutcomeToken _longToken, OutcomeToken _shortToken) {
         longToken = _longToken;
         shortToken = _shortToken;
+
+        // Initialize reserves
+        longReserve = INITIAL_RESERVE;
+        shortReserve = INITIAL_RESERVE;
+        
+        // Mint initial tokens to this contract
+        longToken.mint(address(this), INITIAL_RESERVE);
+        shortToken.mint(address(this), INITIAL_RESERVE);
+
     }
-
-
 
     function deposit() external payable {
         uint256 amount = msg.value;
-        longToken.mint(msg.sender, amount);
-        shortToken.mint(msg.sender, amount);
+
+        require(amount <= longReserve && amount <= shortReserve, "Insufficient reserve");
+
+        longToken.transfer(msg.sender, amount);
+        shortToken.transfer(msg.sender, amount);
+
+        longReserve -= amount;
+        shortReserve -= amount;
+
     }
 
     function withdraw(uint256 amount) external {
         require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
 
-        longToken.burn(msg.sender, amount);
-        shortToken.burn(msg.sender, amount);
-        payable(msg.sender).transfer(amount);
+        longToken.transferFrom(msg.sender, address(this), amount);
+        shortToken.transferFrom(msg.sender, address(this), amount);
+        
+        longReserve += amount;
+        shortReserve += amount;
 
+        payable(msg.sender).transfer(amount);
     }
 
     function swap(bool buyLong, uint256 amountIn) external {
         require(amountIn > 0, "Amount must be greater than 0");
 
-        uint256 longSupply = longToken.totalSupply();
-        uint256 shortSupply = shortToken.totalSupply();
 
         uint256 amountOut;
         if (buyLong) {
-            amountOut = calculateSwapAmount(shortSupply, longSupply, amountIn);
-            assert(amountOut <= longSupply);
-            shortToken.burn(msg.sender, amountIn);
+            amountOut = calculateSwapAmount(shortReserve, longReserve, amountIn);
+            shortToken.transferFrom(msg.sender, address(this), amountIn);
             longToken.transfer(msg.sender, amountOut);
+            shortReserve += amountIn;
+            longReserve -= amountOut;
         } else {
-            amountOut = calculateSwapAmount(longSupply, shortSupply, amountIn);
-            assert(amountOut <= shortSupply);
-            longToken.burn(msg.sender, amountIn);
+            amountOut = calculateSwapAmount(longReserve, shortReserve, amountIn);
+            longToken.transferFrom(msg.sender, address(this), amountIn);
             shortToken.transfer(msg.sender, amountOut);
+            longReserve += amountIn;
+            shortReserve -= amountOut;
+
         }
     }
 
-    function calculateSwapAmount(uint256 balanceIn, uint256 balanceOut, uint256 amountIn) internal pure returns (uint256) {
-        uint256 k = balanceIn * balanceOut;
-        uint256 amountOut = balanceOut - (k / (balanceIn + amountIn));
+    function calculateSwapAmount(uint256 reserveIn, uint256 reserveOut, uint256 amountIn) internal pure returns (uint256) {
+        uint256 k = reserveIn * reserveOut;
+        uint256 amountOut = reserveOut - (k / (reserveIn + amountIn));
         return amountOut;
     }
 }
