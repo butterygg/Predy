@@ -7,48 +7,48 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 contract MarketMaker {
     using Math for uint256;
 
-    OutcomeToken public passToken;
-    OutcomeToken public failToken;
+    OutcomeToken public longToken;
+    OutcomeToken public shortToken;
 
-    constructor(OutcomeToken _passToken, OutcomeToken _failToken) {
-        passToken = _passToken;
-        failToken = _failToken;
+    constructor(OutcomeToken _longToken, OutcomeToken _shortToken) {
+        longToken = _longToken;
+        shortToken = _shortToken;
     }
 
 
 
     function deposit() external payable {
         uint256 amount = msg.value;
-        passToken.mint(msg.sender, amount);
-        failToken.mint(msg.sender, amount);
+        longToken.mint(msg.sender, amount);
+        shortToken.mint(msg.sender, amount);
     }
 
     function withdraw(uint256 amount) external {
-        require(passToken.balanceOf(msg.sender) >= amount && failToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
 
-        passToken.burn(msg.sender, amount);
-        failToken.burn(msg.sender, amount);
+        longToken.burn(msg.sender, amount);
+        shortToken.burn(msg.sender, amount);
         payable(msg.sender).transfer(amount);
 
     }
 
-    function swap(bool buyPass, uint256 amountIn) external {
+    function swap(bool buyLong, uint256 amountIn) external {
         require(amountIn > 0, "Amount must be greater than 0");
 
-        uint256 passSupply = passToken.totalSupply();
-        uint256 failSupply = failToken.totalSupply();
+        uint256 longSupply = longToken.totalSupply();
+        uint256 shortSupply = shortToken.totalSupply();
 
         uint256 amountOut;
-        if (buyPass) {
-            amountOut = calculateSwapAmount(failSupply, passSupply, amountIn);
-            require(amountOut <= passSupply, "Insufficient liquidity");
-            failToken.burn(msg.sender, amountIn);
-            passToken.transfer(msg.sender, amountOut);
+        if (buyLong) {
+            amountOut = calculateSwapAmount(shortSupply, longSupply, amountIn);
+            assert(amountOut <= longSupply);
+            shortToken.burn(msg.sender, amountIn);
+            longToken.transfer(msg.sender, amountOut);
         } else {
-            amountOut = calculateSwapAmount(passSupply, failSupply, amountIn);
-            require(amountOut <= failSupply, "Insufficient liquidity");
-            passToken.burn(msg.sender, amountIn);
-            failToken.transfer(msg.sender, amountOut);
+            amountOut = calculateSwapAmount(longSupply, shortSupply, amountIn);
+            assert(amountOut <= shortSupply);
+            longToken.burn(msg.sender, amountIn);
+            shortToken.transfer(msg.sender, amountOut);
         }
     }
 
