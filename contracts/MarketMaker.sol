@@ -9,7 +9,6 @@ contract MarketMaker {
 
     OutcomeToken public passToken;
     OutcomeToken public failToken;
-    uint256 public constant INITIAL_LIQUIDITY = 1e18;
 
     constructor(OutcomeToken _passToken, OutcomeToken _failToken) {
         passToken = _passToken;
@@ -22,12 +21,6 @@ contract MarketMaker {
         uint256 amount = msg.value;
         passToken.mint(msg.sender, amount);
         failToken.mint(msg.sender, amount);
-
-        if (passToken.totalSupply() == 0 && failToken.totalSupply() == 0) {
-            passToken.mint(address(this), INITIAL_LIQUIDITY);
-            failToken.mint(address(this), INITIAL_LIQUIDITY);
-        }
-
     }
 
     function withdraw(uint256 amount) external {
