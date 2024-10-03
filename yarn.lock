@@ -1438,7 +1438,7 @@ __metadata:
     "@typechain/ethers-v6": "npm:^0.5.0"
     "@typechain/hardhat": "npm:^9.0.0"
     chai: "npm:^4.2.0"
-    ethers: "npm:^6.4.0"
+    ethers: "npm:^6.13.3"
     hardhat: "npm:^2.22.12"
     hardhat-gas-reporter: "npm:^1.0.8"
     prettier: "npm:^3.3.3"
@@ -2529,7 +2529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^6.4.0, ethers@npm:^6.7.0":
+"ethers@npm:^6.13.3, ethers@npm:^6.7.0":
   version: 6.13.3
   resolution: "ethers@npm:6.13.3"
   dependencies:
