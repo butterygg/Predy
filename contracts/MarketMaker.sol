@@ -42,17 +42,22 @@ contract MarketMaker {
 
     }
 
-    function withdraw(uint256 amount) external {
-        require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
+function withdraw(uint256 amount) external {
+    require(longToken.balanceOf(msg.sender) >= amount && shortToken.balanceOf(msg.sender) >= amount, "Insufficient balance");
 
-        longToken.transferFrom(msg.sender, address(this), amount);
-        shortToken.transferFrom(msg.sender, address(this), amount);
-        
-        longReserve += amount;
-        shortReserve += amount;
+    // Check allowances
+    require(longToken.allowance(msg.sender, address(this)) >= amount, "Insufficient long token allowance");
+    require(shortToken.allowance(msg.sender, address(this)) >= amount, "Insufficient short token allowance");
 
-        payable(msg.sender).transfer(amount);
-    }
+    // Transfer tokens using transferFrom
+    require(longToken.transferFrom(msg.sender, address(this), amount), "Long token transfer failed");
+    require(shortToken.transferFrom(msg.sender, address(this), amount), "Short token transfer failed");
+    
+    longReserve += amount;
+    shortReserve += amount;
+
+    payable(msg.sender).transfer(amount);
+}
 
     function swap(bool buyLong, uint256 amountIn) external {
         require(amountIn > 0, "Amount must be greater than 0");

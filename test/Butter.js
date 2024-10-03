@@ -115,11 +115,11 @@ describe("Butter", function () {
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
 
       const OutcomeToken = await ethers.getContractFactory("OutcomeToken");
-      const passToken = OutcomeToken.attach(await marketMaker.passToken());
-      const failToken = OutcomeToken.attach(await marketMaker.failToken());
+      const longToken = OutcomeToken.attach(await marketMaker.longToken());
+      const shortToken = OutcomeToken.attach(await marketMaker.shortToken());
 
-      expect(await passToken.balanceOf(addr1.address)).to.equal(depositAmount);
-      expect(await failToken.balanceOf(addr1.address)).to.equal(depositAmount);
+      expect(await longToken.balanceOf(addr1.address)).to.equal(depositAmount);
+      expect(await shortToken.balanceOf(addr1.address)).to.equal(depositAmount);
     });
 
     it("Should allow withdrawing", async function () {
@@ -127,9 +127,21 @@ describe("Butter", function () {
       const depositAmount = ethers.parseEther("1");
       await marketMaker.connect(addr1).deposit({ value: depositAmount });
 
-      await expect(
-        marketMaker.connect(addr1).withdraw(depositAmount)
-      ).to.changeEtherBalance(addr1, depositAmount);
+      const OutcomeToken = await ethers.getContractFactory("OutcomeToken");
+      const longToken = OutcomeToken.attach(await marketMaker.longToken());
+      const shortToken = OutcomeToken.attach(await marketMaker.shortToken());
+
+      // Approve tokens for withdrawal
+      await longToken.connect(addr1).approve(marketMaker.getAddress(), depositAmount);
+      await shortToken.connect(addr1).approve(marketMaker.getAddress(), depositAmount);
+
+      // Perform withdrawal
+      await expect(marketMaker.connect(addr1).withdraw(depositAmount))
+        .to.changeEtherBalance(addr1, depositAmount);
+
+      // Check token balances after withdrawal
+      expect(await longToken.balanceOf(addr1.address)).to.equal(0);
+      expect(await shortToken.balanceOf(addr1.address)).to.equal(0);
     });
 
     it("Should allow swapping tokens", async function () {
