@@ -1,6 +1,39 @@
 {
-  "name": "archackathon",
-  "packageManager": "yarn@4.5.0",
+  "name": "ghee",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "account": "yarn workspace @se-2/hardhat account",
+    "chain": "yarn workspace @se-2/hardhat chain",
+    "compile": "yarn workspace @se-2/hardhat compile",
+    "deploy": "yarn workspace @se-2/hardhat deploy",
+    "flatten": "yarn workspace @se-2/hardhat flatten",
+    "fork": "yarn workspace @se-2/hardhat fork",
+    "format": "yarn next:format && yarn hardhat:format",
+    "generate": "yarn workspace @se-2/hardhat generate",
+    "hardhat-verify": "yarn workspace @se-2/hardhat hardhat-verify",
+    "hardhat:format": "yarn workspace @se-2/hardhat format",
+    "hardhat:lint": "yarn workspace @se-2/hardhat lint",
+    "hardhat:lint-staged": "yarn workspace @se-2/hardhat lint-staged",
+    "hardhat:test": "yarn workspace @se-2/hardhat test",
+    "postinstall": "husky install",
+    "next:build": "yarn workspace @se-2/nextjs build",
+    "next:check-types": "yarn workspace @se-2/nextjs check-types",
+    "next:format": "yarn workspace @se-2/nextjs format",
+    "next:lint": "yarn workspace @se-2/nextjs lint",
+    "next:serve": "yarn workspace @se-2/nextjs serve",
+    "precommit": "lint-staged",
+    "start": "yarn workspace @se-2/nextjs dev",
+    "test": "yarn hardhat:test",
+    "vercel": "yarn workspace @se-2/nextjs vercel",
+    "vercel:yolo": "yarn workspace @se-2/nextjs vercel:yolo",
+    "verify": "yarn workspace @se-2/hardhat verify"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
     "@nomicfoundation/hardhat-ethers": "^3.0.0",
@@ -15,11 +48,17 @@
     "ethers": "^6.13.3",
     "hardhat": "^2.22.12",
     "hardhat-gas-reporter": "^1.0.8",
+    "husky": "~8.0.3",
+    "lint-staged": "~13.2.2",
     "prettier": "^3.3.3",
     "solidity-coverage": "^0.8.0",
     "typechain": "^8.3.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2"
+  },
+  "packageManager": "yarn@4.5.0",
+  "engines": {
+    "node": ">=18.17.0"
   }
 }
