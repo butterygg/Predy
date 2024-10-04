@@ -931,6 +931,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@reality.eth/contracts@npm:^3.0.59":
+  version: 3.0.59
+  resolution: "@reality.eth/contracts@npm:3.0.59"
+  dependencies:
+    ethers: "npm:^5.6.8"
+  checksum: 10c0/c89bc0fa2675548fdc345f192a362584faa42280d96740d9a165523c752926ee03ca80a0f0c29bf1ac9250fc84a3bdc946cadabedcbbd0e06b3099027ee91a57
+  languageName: node
+  linkType: hard
+
 "@scure/base@npm:~1.1.0, @scure/base@npm:~1.1.6":
   version: 1.1.9
   resolution: "@scure/base@npm:1.1.9"
@@ -1435,6 +1444,7 @@ __metadata:
     "@nomicfoundation/hardhat-toolbox": "npm:^5.0.0"
     "@nomicfoundation/hardhat-verify": "npm:^2.0.0"
     "@openzeppelin/contracts": "npm:^5.0.2"
+    "@reality.eth/contracts": "npm:^3.0.59"
     "@typechain/ethers-v6": "npm:^0.5.0"
     "@typechain/hardhat": "npm:^9.0.0"
     chai: "npm:^4.2.0"
@@ -2491,7 +2501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.7.2":
+"ethers@npm:^5.6.8, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:

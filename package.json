@@ -20,6 +20,7 @@
     "typechain": "^8.3.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.0.2"
+    "@openzeppelin/contracts": "^5.0.2",
+    "@reality.eth/contracts": "^3.0.59"
   }
 }

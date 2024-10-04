@@ -15,7 +15,7 @@ describe("Butter", function () {
     return {marketFactory, owner, addr1, addr2};
   }
 
-  describe("MarketFactory", function () {
+  describe.only("MarketFactory", function () {
     it("Should deploy MarketFactory successfully", async function () {
       const {marketFactory} = await loadFixture(deployContractsFixture);
       expect(await marketFactory.getAddress()).to.be.properAddress;

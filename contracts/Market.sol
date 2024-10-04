@@ -41,7 +41,8 @@ contract Market {
 
     function resolveMarket() external {
         require(!isResolved, "Market already resolved");
-        outcome = oracle.getAnswer(questionId);
+        bytes32 result = oracle.resultForOnceSettled(questionId);
+        outcome = result != bytes32(0);
         isResolved = true;
     }
 }
